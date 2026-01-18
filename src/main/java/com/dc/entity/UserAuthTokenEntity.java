@@ -1,0 +1,78 @@
+package com.dc.entity;
+
+import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+
+@Entity(name = "tbl_user_token_details")
+public class UserAuthTokenEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true,nullable = false)
+    private String token;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id",nullable = false)
+    private UserAuthEntity user;
+
+    @Column(nullable = false)
+    private LocalDateTime tokenCreatedDate;
+
+    @Column(nullable = false)
+    private LocalDateTime tokenExpirationDate;
+
+    @Column(nullable = false)
+    private Boolean tokenUsed;
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public UserAuthEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserAuthEntity user) {
+        this.user = user;
+    }
+
+    public LocalDateTime getTokenCreatedDate() {
+        return tokenCreatedDate;
+    }
+
+    public void setTokenCreatedDate(LocalDateTime tokenCreatedDate) {
+        this.tokenCreatedDate = tokenCreatedDate;
+    }
+
+    public LocalDateTime getTokenExpirationDate() {
+        return tokenExpirationDate;
+    }
+
+    public void setTokenExpirationDate(LocalDateTime tokenExpirationDate) {
+        this.tokenExpirationDate = tokenExpirationDate;
+    }
+
+    public Boolean getTokenUsed() {
+        return tokenUsed;
+    }
+
+    public void setTokenUsed(Boolean tokenUsed) {
+        this.tokenUsed = tokenUsed;
+    }
+}
