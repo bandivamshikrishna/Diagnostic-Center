@@ -13,13 +13,13 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 
 public class JWTAuthenticationProvider implements AuthenticationProvider {
 
-    private final JWTUtils jwtUtils;
     private final UserAuthServiceImpl userAuthService;
+    private final JWTUtils jwtUtils;
 
 
-    public JWTAuthenticationProvider(JWTUtils jwtUtils, UserAuthServiceImpl userAuthService){
-        this.jwtUtils = jwtUtils;
+    public JWTAuthenticationProvider( UserAuthServiceImpl userAuthService,JWTUtils jwtUtils){
         this.userAuthService = userAuthService;
+        this.jwtUtils = jwtUtils;
     }
 
     @Override

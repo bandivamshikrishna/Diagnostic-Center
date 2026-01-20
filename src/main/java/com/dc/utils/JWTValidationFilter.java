@@ -1,7 +1,7 @@
 package com.dc.utils;
 
 import com.dc.config.UserAuthConfig;
-import com.dc.exception.InvalidJWTException;
+import com.dc.repository.UserAuthTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class JWTValidationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = getEmailFromRequest(request);
+        String token = getTokenFromRequest(request);
         List<String> publicURLs = UserAuthConfig.getPublicURLs();
 
         if(publicURLs.contains(request.getServletPath())) {
@@ -36,17 +36,18 @@ public class JWTValidationFilter extends OncePerRequestFilter {
         }
 
         if(token != null) {
-            JWTAuthenticationToken jwtAuthenticationToken = new JWTAuthenticationToken(token);
-            Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
-            if (authentication.isAuthenticated())
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+        JWTAuthenticationToken jwtAuthenticationToken = new JWTAuthenticationToken(token);
+        Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);
+        if (authentication.isAuthenticated())
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
         }
 
         filterChain.doFilter(request,response);
     }
 
 
-    private String getEmailFromRequest(HttpServletRequest request){
+    public static String getTokenFromRequest(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");
         if(bearerToken != null && bearerToken.startsWith("Bearer "))
             return bearerToken.substring(7);

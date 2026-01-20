@@ -1,6 +1,5 @@
 package com.dc.utils;
 
-import com.dc.dto.JWTTokens;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;

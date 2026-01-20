@@ -4,6 +4,7 @@ import com.dc.dto.JWTTokens;
 import com.dc.dto.UserCreateRequestDTO;
 import com.dc.dto.UserLoginRequestDTO;
 import com.dc.entity.UserAuthEntity;
+import com.dc.enums.TokenTypeEnum;
 import com.dc.exception.UserAlreadyExistsException;
 import com.dc.exception.UserNotFoundException;
 import com.dc.exception.VendorNotFoundException;
@@ -13,6 +14,7 @@ import com.dc.repository.VendorRepository;
 import com.dc.service.UserAuthService;
 import com.dc.service.UserAuthTokenService;
 import com.dc.utils.JWTUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,10 +35,16 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     private final AuthenticationManager authenticationManager;
     private final JWTUtils jwtUtils;
 
+    @Value("${password.setOrReset.token.expiration}")
+    private Long passwordExpirationMinutes;
+
+    @Value("${jwt.refresh.token.expiration}")
+    private Long refreshTokenExpiration;
+
 
     public UserAuthServiceImpl(UserAuthRepository userAuthRepository,VendorRepository vendorRepository,
                                UserAuthTokenService userAuthTokenService,PasswordEncoder passwordEncoder,
-                               AuthenticationManager authenticationManager,JWTUtils jwtUtils
+                               AuthenticationManager authenticationManager, JWTUtils jwtUtils
                                ){
         this.userAuthRepository = userAuthRepository;
         this.vendorRepository = vendorRepository;
@@ -63,7 +71,8 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
         userAuthEntity.setLocked(true);
         userAuthEntity.setCreatedDate(LocalDate.now());
         Long id = userAuthRepository.save(userAuthEntity).getId();
-        userAuthTokenService.createToken(userAuthEntity);
+        userAuthTokenService.createToken(userAuthEntity,null,
+                TokenTypeEnum.SET_OR_RESET_PASSWORD_TOKEN, passwordExpirationMinutes);
         return String.format("User Created Successfully with ID : %d",id);
     }
 
@@ -88,6 +97,9 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
         if(authentication.isAuthenticated()){
             jwtTokens.setAccessToken(jwtUtils.generateToken(userLoginRequestDTO.getEmail(),true));
             jwtTokens.setRefreshToken(jwtUtils.generateToken(userLoginRequestDTO.getEmail(),false));
+            userAuthTokenService.invalidateOldRefreshTokens(userLoginRequestDTO.getEmail());
+            userAuthTokenService.createToken((UserAuthEntity) authentication.getPrincipal(), jwtTokens.getRefreshToken(),
+                        TokenTypeEnum.REFRESH_TOKEN, refreshTokenExpiration);
         }
         return  jwtTokens;
     }

@@ -2,6 +2,7 @@ package com.dc.serviceImpl;
 
 import com.dc.entity.UserAuthEntity;
 import com.dc.entity.UserAuthTokenEntity;
+import com.dc.enums.TokenTypeEnum;
 import com.dc.exception.TokenAlreadyUsedExpection;
 import com.dc.exception.TokenNotFoundException;
 import com.dc.repository.UserAuthTokenRepository;
@@ -23,13 +24,14 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     }
 
     @Override
-    public void createToken(UserAuthEntity userAuthEntity) {
+    public void createToken(UserAuthEntity userAuthEntity, String token, TokenTypeEnum tokenType, Long minutes) {
         UserAuthTokenEntity userAuthTokenEntity = new UserAuthTokenEntity();
-        userAuthTokenEntity.setToken(UUID.randomUUID().toString());
+        userAuthTokenEntity.setToken(token.isBlank() ? UUID.randomUUID().toString() : token);
         userAuthTokenEntity.setUser(userAuthEntity);
         userAuthTokenEntity.setTokenCreatedDate(LocalDateTime.now());
-        userAuthTokenEntity.setTokenUsed(false);
-        userAuthTokenEntity.setTokenExpirationDate(LocalDateTime.now().plusMinutes(30));
+        userAuthTokenEntity.setTokenRevoked(false);
+        userAuthTokenEntity.setTokenType(tokenType);
+        userAuthTokenEntity.setTokenExpirationDate(LocalDateTime.now().plusMinutes(minutes));
         userAuthTokenRepository.save(userAuthTokenEntity);
     }
 
@@ -39,7 +41,7 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
                 ()-> new TokenNotFoundException(String.format("Invalid Token %s", token))
         );
 
-        if(userAuthTokenEntity.getTokenUsed())
+        if(userAuthTokenEntity.getTokenRevoked())
             throw new TokenAlreadyUsedExpection(String.format("Token %s is already used", token));
 
         if(userAuthTokenEntity.getTokenExpirationDate().isBefore(LocalDateTime.now()))
@@ -60,13 +62,22 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
         UserAuthTokenEntity userAuthTokenEntity = userAuthTokenRepository.findByToken(token).orElseThrow(
                 ()-> new TokenNotFoundException(String.format("Invalid Token %s", token))
         );
-        userAuthTokenEntity.setTokenUsed(true);
+        userAuthTokenEntity.setTokenRevoked(true);
         userAuthTokenRepository.save(userAuthTokenEntity);
+    }
+
+    @Override
+    public void invalidateOldRefreshTokens(String email) {
+        List<UserAuthTokenEntity> userAuthTokenEntities = userAuthTokenRepository.findByUserEmail(email);
+        if(!userAuthTokenEntities.isEmpty()){
+            userAuthTokenEntities.forEach(token -> token.setTokenRevoked(true));
+            userAuthTokenRepository.saveAll(userAuthTokenEntities);
+        }
     }
 
     @Scheduled(fixedRate = 1000*60*60)
     public void clearExpiredTokens(){
-        List<UserAuthTokenEntity> userAuthTokenExpired = userAuthTokenRepository.findAllByTokenUsedFalseAndTokenExpirationDateBefore(LocalDateTime.now());
+        List<UserAuthTokenEntity> userAuthTokenExpired = userAuthTokenRepository.findAllByTokenRevokedFalseAndTokenExpirationDateBefore(LocalDateTime.now());
 
         if(!userAuthTokenExpired.isEmpty()){
             userAuthTokenRepository.deleteAll(userAuthTokenExpired);

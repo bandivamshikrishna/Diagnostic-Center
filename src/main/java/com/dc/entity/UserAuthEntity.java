@@ -45,6 +45,10 @@ public class UserAuthEntity implements UserDetails {
     private Boolean locked;
 
 
+    @OneToMany(mappedBy = "user")
+    private List<UserAuthTokenEntity> tokens;
+
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         String role = "ROLE_"+RoleEnum.getRole(getRoleID());

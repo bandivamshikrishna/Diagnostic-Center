@@ -1,5 +1,6 @@
 package com.dc.entity;
 
+import com.dc.enums.TokenTypeEnum;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,10 @@ public class UserAuthTokenEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TokenTypeEnum tokenType;
 
     @Column(unique = true,nullable = false)
     private String token;
@@ -24,8 +29,7 @@ public class UserAuthTokenEntity {
     @Column(nullable = false)
     private LocalDateTime tokenExpirationDate;
 
-    @Column(nullable = false)
-    private Boolean tokenUsed;
+    private Boolean tokenRevoked;
 
 
     public Long getId() {
@@ -68,11 +72,20 @@ public class UserAuthTokenEntity {
         this.tokenExpirationDate = tokenExpirationDate;
     }
 
-    public Boolean getTokenUsed() {
-        return tokenUsed;
+
+    public TokenTypeEnum getTokenType() {
+        return tokenType;
     }
 
-    public void setTokenUsed(Boolean tokenUsed) {
-        this.tokenUsed = tokenUsed;
+    public void setTokenType(TokenTypeEnum tokenType) {
+        this.tokenType = tokenType;
+    }
+
+    public Boolean getTokenRevoked() {
+        return tokenRevoked;
+    }
+
+    public void setTokenRevoked(Boolean tokenRevoked) {
+        this.tokenRevoked = tokenRevoked;
     }
 }
