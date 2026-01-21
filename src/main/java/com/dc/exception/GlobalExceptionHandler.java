@@ -1,6 +1,7 @@
 package com.dc.exception;
 
 
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.LockedException;
@@ -21,6 +22,15 @@ public class GlobalExceptionHandler {
        e.getBindingResult().getFieldErrors().forEach(
                error->errors.put(error.getField(),error.getDefaultMessage()));
        return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Map<String,String>> handleConstraintViolationException(ConstraintViolationException e){
+        Map<String,String> errors = new HashMap<>();
+        e.getConstraintViolations().forEach(
+                error -> errors.put(error.getPropertyPath().toString(),error.getMessage())
+        );
+        return ResponseEntity.badRequest().body(errors);
     }
 
     @ExceptionHandler(VendorNotFoundException.class)
@@ -120,6 +130,13 @@ public class GlobalExceptionHandler {
         Map<String,String> errors = new HashMap<>();
         errors.put("message", e.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
+    }
+
+    @ExceptionHandler(PatientException.class)
+    public ResponseEntity<Map<String,String>> handlePatientException(PatientException e){
+        Map<String,String> errors = new HashMap<>();
+        errors.put(e.getFieldName(), e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
 

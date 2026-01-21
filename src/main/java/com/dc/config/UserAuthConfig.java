@@ -31,7 +31,7 @@ import java.util.List;
 public class UserAuthConfig {
 
     private static final List<String> publicURLs = List.of("/api/user/login",
-            "/api/user/validate-token");
+            "/api/user/validate-token","/api/patient");
 
     public static List<String> getPublicURLs(){
         return publicURLs;
