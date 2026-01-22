@@ -3,8 +3,7 @@ package com.dc.serviceImpl;
 import com.dc.entity.UserAuthEntity;
 import com.dc.entity.UserAuthTokenEntity;
 import com.dc.enums.TokenTypeEnum;
-import com.dc.exception.TokenAlreadyUsedExpection;
-import com.dc.exception.TokenNotFoundException;
+import com.dc.exception.TokenException;
 import com.dc.repository.UserAuthTokenRepository;
 import com.dc.service.UserAuthTokenService;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -38,14 +37,14 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
     @Override
     public Boolean validateToken(String token) {
         UserAuthTokenEntity userAuthTokenEntity = userAuthTokenRepository.findByToken(token).orElseThrow(
-                ()-> new TokenNotFoundException(String.format("Invalid Token %s", token))
+                ()-> new TokenException("token",String.format("Invalid Token %s", token))
         );
 
         if(userAuthTokenEntity.getTokenRevoked())
-            throw new TokenAlreadyUsedExpection(String.format("Token %s is already used", token));
+            throw new TokenException("token",String.format("Token %s is already used", token));
 
         if(userAuthTokenEntity.getTokenExpirationDate().isBefore(LocalDateTime.now()))
-            throw new TokenAlreadyUsedExpection(String.format("The Token %s is already Expired", token));
+            throw new TokenException("token",String.format("The Token %s is already Expired", token));
 
         return true;
     }
@@ -53,14 +52,14 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
 
     public UserAuthEntity getUserFromToken(String token){
         return userAuthTokenRepository.findByToken(token).orElseThrow(
-                ()-> new TokenNotFoundException(String.format("Invalid Token %s", token))
+                ()-> new TokenException("token",String.format("Invalid Token %s", token))
         ).getUser();
     }
 
     @Override
     public void updateTokenUsed(String token) {
         UserAuthTokenEntity userAuthTokenEntity = userAuthTokenRepository.findByToken(token).orElseThrow(
-                ()-> new TokenNotFoundException(String.format("Invalid Token %s", token))
+                ()-> new TokenException("token",String.format("Invalid Token %s", token))
         );
         userAuthTokenEntity.setTokenRevoked(true);
         userAuthTokenRepository.save(userAuthTokenEntity);

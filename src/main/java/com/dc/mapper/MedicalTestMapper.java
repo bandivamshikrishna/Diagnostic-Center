@@ -12,7 +12,6 @@ public class MedicalTestMapper {
         medicalTestEntity.setTestName(medicalTestCreateRequestDTO.getTestName());
         medicalTestEntity.setNormalRange(medicalTestCreateRequestDTO.getNormalRange());
         medicalTestEntity.setUnit(medicalTestCreateRequestDTO.getUnit());
-        medicalTestEntity.setCreatedByUserID(medicalTestCreateRequestDTO.getCreatedByUserID());
         return medicalTestEntity;
     }
 
@@ -37,7 +36,6 @@ public class MedicalTestMapper {
         medicalTestEntity.setActive(medicalTestUpdateRequestDTO.getActive());
         medicalTestEntity.setNormalRange(medicalTestUpdateRequestDTO.getNormalRange());
         medicalTestEntity.setUnit(medicalTestUpdateRequestDTO.getUnit());
-        medicalTestEntity.setLastModifiedByUserID(medicalTestUpdateRequestDTO.getLastModifiedByUserID());
         return medicalTestEntity;
     }
 }

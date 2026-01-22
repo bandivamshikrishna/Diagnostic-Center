@@ -1,7 +1,6 @@
 package com.dc.utils;
 
-import com.dc.exception.InvalidJWTException;
-import com.dc.exception.TokenExpiredExpection;
+import com.dc.exception.TokenException;
 import com.dc.repository.UserAuthTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -40,12 +39,12 @@ public class JWTRefreshFilter extends OncePerRequestFilter {
 
         String refreshToken = getRefreshTokenFromCookie(request);
         if(refreshToken == null)
-            throw  new InvalidJWTException("JWT Refresh Token is Missing");
+            throw  new TokenException("jwt Token","JWT Refresh Token is Missing");
 
         Boolean isValidToken = userAuthTokenRepository.findByToken(refreshToken)
                 .map(t->!t.getTokenRevoked()).orElse(false);
         if(!isValidToken)
-            throw new TokenExpiredExpection("Token Expired..");
+            throw new TokenException("token","Token Expired..");
 
         JWTAuthenticationToken jwtAuthenticationToken = new JWTAuthenticationToken(refreshToken);
         Authentication authentication = authenticationManager.authenticate(jwtAuthenticationToken);

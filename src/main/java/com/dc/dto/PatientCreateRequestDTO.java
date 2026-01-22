@@ -60,6 +60,9 @@ public class PatientCreateRequestDTO {
     @NotNull(message = "Status is required")
     private PatientStatusEnum status;
 
+    @NotNull(message = "Vendor ID is required")
+    private Long vendorID;
+
 
     public Long getTitleID() {
         return titleID;
@@ -166,4 +169,11 @@ public class PatientCreateRequestDTO {
         this.status = status;
     }
 
+    public Long getVendorID() {
+        return vendorID;
+    }
+
+    public void setVendorID(Long vendorID) {
+        this.vendorID = vendorID;
+    }
 }

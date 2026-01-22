@@ -4,6 +4,8 @@ package com.dc.exception;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -33,38 +35,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
-    @ExceptionHandler(VendorNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleVendorNotFoundException(VendorNotFoundException e){
+    @ExceptionHandler(GenericException.class)
+    public ResponseEntity<Map<String,String>> handleCustomExceptions(GenericException e){
         Map<String,String> errors = new HashMap<>();
-        errors.put("Vendor", e.getMessage());
-        return ResponseEntity.badRequest().body(errors);
-    }
-
-    @ExceptionHandler(VendorAlreadyExistsException.class)
-    public ResponseEntity<Map<String,String>> handleVendorAlreadyExistsException(VendorAlreadyExistsException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("email", e.getMessage());
-        return ResponseEntity.badRequest().body(errors);
-    }
-
-    @ExceptionHandler(PhoneNumberAlreadyExistsException.class)
-    public ResponseEntity<Map<String,String>> handleVendorAlreadyExistsException(PhoneNumberAlreadyExistsException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("phoneNumber", e.getMessage());
-        return ResponseEntity.badRequest().body(errors);
-    }
-
-    @ExceptionHandler(MedicalTestAlreadyExistsException.class)
-    public ResponseEntity<Map<String,String>> handleMedicalTestAlreadyExistsException(MedicalTestAlreadyExistsException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("testName", e.getMessage());
-        return ResponseEntity.badRequest().body(errors);
-    }
-
-    @ExceptionHandler(MedicalTestNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleMedicalTestNotFoundException(MedicalTestNotFoundException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("Medical Test", e.getMessage());
+        errors.put(e.getFieldName(), e.getMessage());
         return ResponseEntity.badRequest().body(errors);
     }
 
@@ -76,19 +50,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
     }
 
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<Map<String,String>> handleUserAlreadyExistsException(UserAlreadyExistsException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("email", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleUserNotFoundException(UserNotFoundException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("createdByUserID", e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
 
     @ExceptionHandler(RoleNotFoundException.class)
     public ResponseEntity<Map<String,String>> handleRoleNotFoundException(RoleNotFoundException e){
@@ -97,48 +58,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }
 
-    @ExceptionHandler(TokenNotFoundException.class)
-    public ResponseEntity<Map<String,String>> handleTokenNotFoundException(TokenNotFoundException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("token", e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
-    }
 
-    @ExceptionHandler(TokenAlreadyUsedExpection.class)
-    public ResponseEntity<Map<String,String>> handleTokenAlreadyUsedExpection(TokenAlreadyUsedExpection e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("token", e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
-    }
-
-    @ExceptionHandler(TokenExpiredExpection.class)
-    public ResponseEntity<Map<String,String>> handleTokenExpiredExpection(TokenExpiredExpection e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put("token", e.getMessage());
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
-    }
 
     @ExceptionHandler(LockedException.class)
     public ResponseEntity<Map<String,String>> handleLockedException(LockedException e){
         Map<String,String> errors = new HashMap<>();
-        errors.put("message", e.getMessage());
+        errors.put("user", e.getMessage());
         return ResponseEntity.status(HttpStatus.LOCKED).body(errors);
     }
 
-    @ExceptionHandler(InvalidJWTException.class)
-    public ResponseEntity<Map<String,String>> handleInvalidJWTException(InvalidJWTException e){
+
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public ResponseEntity<Map<String,String>> handleUserLoginException(InternalAuthenticationServiceException e){
         Map<String,String> errors = new HashMap<>();
-        errors.put("message", e.getMessage());
+        errors.put("email", e.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String,String>> handleBadCredentialsException(BadCredentialsException e){
+        Map<String,String> errors = new HashMap<>();
+        errors.put("message", "In correct Email or Password");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errors);
     }
-
-    @ExceptionHandler(PatientException.class)
-    public ResponseEntity<Map<String,String>> handlePatientException(PatientException e){
-        Map<String,String> errors = new HashMap<>();
-        errors.put(e.getFieldName(), e.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
-
-
 
 }

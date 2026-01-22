@@ -1,9 +1,7 @@
 package com.dc.config;
 
-import com.dc.exception.TokenNotFoundException;
-import com.dc.repository.UserAuthTokenRepository;
+import com.dc.exception.TokenException;
 import com.dc.service.UserAuthTokenService;
-import com.dc.serviceImpl.UserAuthServiceImpl;
 import com.dc.utils.JWTUtils;
 import com.dc.utils.JWTValidationFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +26,7 @@ public class CustomLogoutHandler implements LogoutHandler {
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String accessToken = JWTValidationFilter.getTokenFromRequest(request);
         if(accessToken == null)
-            throw new TokenNotFoundException("Access Token is Missing");
+            throw new TokenException("token","Access Token is Missing");
         userAuthTokenService.invalidateOldRefreshTokens(jwtUtils.getEmailFromToken(accessToken));
     }
 }

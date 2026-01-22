@@ -72,6 +72,11 @@ public class PatientEntity {
     @Enumerated(EnumType.STRING)
     private PatientStatusEnum patientStatus;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "vendor_id",referencedColumnName = "id",nullable = false)
+    private VendorEntity vendorID;
+
     public Long getId() {
         return id;
     }
@@ -207,5 +212,13 @@ public class PatientEntity {
 
     public void setPatientStatus(PatientStatusEnum patientStatus) {
         this.patientStatus = patientStatus;
+    }
+
+    public VendorEntity getVendorID() {
+        return vendorID;
+    }
+
+    public void setVendorID(VendorEntity vendorID) {
+        this.vendorID = vendorID;
     }
 }

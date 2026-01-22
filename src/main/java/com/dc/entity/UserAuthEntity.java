@@ -29,11 +29,13 @@ public class UserAuthEntity implements UserDetails {
     @Column(nullable = false)
     private Long roleID;
 
-    @Column(nullable = false)
-    private Long vendorID;
+    @ManyToOne
+    @JoinColumn(name = "vendor_id", referencedColumnName = "id")
+    private VendorEntity vendorID;
 
-    @Column(nullable = false)
-    private Long createdByUserID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id",referencedColumnName = "id")
+    private UserAuthEntity createdByUserID;
 
     @Column(nullable = false)
     private LocalDate createdDate;
@@ -45,7 +47,7 @@ public class UserAuthEntity implements UserDetails {
     private Boolean locked;
 
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<UserAuthTokenEntity> tokens;
 
 
@@ -112,19 +114,19 @@ public class UserAuthEntity implements UserDetails {
         this.roleID = roleID;
     }
 
-    public Long getVendorID() {
+    public VendorEntity getVendorID() {
         return vendorID;
     }
 
-    public void setVendorID(Long vendorID) {
+    public void setVendorID(VendorEntity vendorID) {
         this.vendorID = vendorID;
     }
 
-    public Long getCreatedByUserID() {
+    public UserAuthEntity getCreatedByUserID() {
         return createdByUserID;
     }
 
-    public void setCreatedByUserID(Long createdByUserID) {
+    public void setCreatedByUserID(UserAuthEntity createdByUserID) {
         this.createdByUserID = createdByUserID;
     }
 

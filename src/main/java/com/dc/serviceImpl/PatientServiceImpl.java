@@ -1,16 +1,11 @@
 package com.dc.serviceImpl;
 
 import com.dc.dto.PatientCreateRequestDTO;
-import com.dc.entity.PatientEntity;
-import com.dc.entity.PatientGenderEntity;
-import com.dc.entity.PatientTitleEntity;
-import com.dc.entity.UserAuthEntity;
+import com.dc.entity.*;
 import com.dc.exception.PatientException;
+import com.dc.exception.VendorException;
 import com.dc.mapper.PatientMapper;
-import com.dc.repository.PatientGenderRepository;
-import com.dc.repository.PatientRepository;
-import com.dc.repository.PatientTitleRepository;
-import com.dc.repository.UserAuthRepository;
+import com.dc.repository.*;
 import com.dc.service.PatientService;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +18,18 @@ public class PatientServiceImpl implements PatientService {
     private final PatientTitleRepository patientTitleRepository;
     private final PatientGenderRepository patientGenderRepository;
     private final UserAuthRepository userAuthRepository;
+    private final VendorRepository vendorRepository;
 
     public PatientServiceImpl(PatientRepository patientRepository,
                               PatientTitleRepository patientTitleRepository,
                               PatientGenderRepository patientGenderRepository,
-                              UserAuthRepository userAuthRepository){
+                              UserAuthRepository userAuthRepository,
+                              VendorRepository vendorRepository){
         this.patientRepository = patientRepository;
         this.patientTitleRepository = patientTitleRepository;
         this.patientGenderRepository = patientGenderRepository;
         this.userAuthRepository = userAuthRepository;
+        this.vendorRepository = vendorRepository;
     }
 
 
@@ -49,9 +47,14 @@ public class PatientServiceImpl implements PatientService {
                 ()-> new PatientException(String.format("Invalid Created By User ID : %d", patientCreateRequestDTO.getCreatedByUserID()),"createdByUserID")
         );
 
+        VendorEntity vendorEntity = vendorRepository.findById(patientCreateRequestDTO.getVendorID()).orElseThrow(
+                () -> new VendorException("vendorID", String.format("Vendor not Found with ID : %d", patientCreateRequestDTO.getVendorID()))
+        );
+
         PatientEntity patientEntity = PatientMapper.fromCreateDTOToEntity(patientCreateRequestDTO);
         patientEntity.setPatientTitle(title);
         patientEntity.setGender(gender);
+        patientEntity.setVendorID(vendorEntity);
         patientEntity.setCreatedBy(createdByUser);
         patientEntity.setCreatedDateTime(LocalDateTime.now());
         return String.format("Patient Created Successfully with ID : %d", patientRepository.save(patientEntity).getId());

@@ -4,10 +4,9 @@ import com.dc.dto.JWTTokens;
 import com.dc.dto.UserCreateRequestDTO;
 import com.dc.dto.UserLoginRequestDTO;
 import com.dc.entity.UserAuthEntity;
+import com.dc.entity.VendorEntity;
 import com.dc.enums.TokenTypeEnum;
-import com.dc.exception.UserAlreadyExistsException;
-import com.dc.exception.UserNotFoundException;
-import com.dc.exception.VendorNotFoundException;
+import com.dc.exception.*;
 import com.dc.mapper.UserAuthMapper;
 import com.dc.repository.UserAuthRepository;
 import com.dc.repository.VendorRepository;
@@ -57,16 +56,20 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
     @Override
     public String createUser(UserCreateRequestDTO userCreateRequestDTO) {
         if(userAuthRepository.existsByEmail(userCreateRequestDTO.getEmail().toLowerCase().trim()))
-            throw new UserAlreadyExistsException(String.format("User Already with Email ID : %s", userCreateRequestDTO.getEmail()));
+            throw new UserException("email",String.format("User Already with Email ID : %s", userCreateRequestDTO.getEmail()));
 
-        if(vendorRepository.findById(userCreateRequestDTO.getVendorID()).isEmpty())
-            throw new VendorNotFoundException(String.format("Vendor Not Found with ID : %d", userCreateRequestDTO.getVendorID()));
+        VendorEntity vendor = vendorRepository.findById(userCreateRequestDTO.getVendorID()).orElseThrow(
+                () -> new VendorException("vendorID",String.format("Vendor Not Found with ID : %d", userCreateRequestDTO.getVendorID()))
+        );
 
-        if(!userAuthRepository.existsById(userCreateRequestDTO.getCreatedByUserID()))
-            throw new UserNotFoundException(String.format("User Not Found with ID : %d", userCreateRequestDTO.getCreatedByUserID()));
+        UserAuthEntity createdByUserID = userAuthRepository.findById(userCreateRequestDTO.getCreatedByUserID()).orElseThrow(
+                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", userCreateRequestDTO.getCreatedByUserID()))
+        );
 
         UserAuthEntity userAuthEntity = UserAuthMapper.fromCreateDTOToEntity(userCreateRequestDTO);
         userAuthEntity.setEmail(userAuthEntity.getEmail().toLowerCase());
+        userAuthEntity.setVendorID(vendor);
+        userAuthEntity.setCreatedByUserID(createdByUserID);
         userAuthEntity.setActive(true);
         userAuthEntity.setLocked(true);
         userAuthEntity.setCreatedDate(LocalDate.now());
@@ -106,9 +109,9 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
 
 
     @Override
-    public UserAuthEntity loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserAuthEntity loadUserByUsername(String email) throws GenericException {
         return userAuthRepository.findByEmail(email).orElseThrow(
-                ()-> new UserNotFoundException(String.format("User Not Found with Email : %s", email))
+                ()-> new UserException("email",String.format("User Not Found with Email : %s", email))
         );
     }
 }

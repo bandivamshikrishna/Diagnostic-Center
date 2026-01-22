@@ -29,14 +29,16 @@ public class VendorEntity {
     @Column(nullable = true)
     private byte[] logo;
 
-    @Column(nullable = false)
-    private Long createdByUserID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by_user_id", referencedColumnName = "id",nullable = false)
+    private UserAuthEntity createdByUserID;
 
     @Column(nullable = false)
     private LocalDateTime createdDate;
 
-    @Column(nullable = true)
-    private Long lastModifiedByUserID;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "last_modified_by_user_id", referencedColumnName = "id")
+    private UserAuthEntity lastModifiedByUserID;
 
     @Column(nullable = true)
     private LocalDateTime lastModifiedDate;
@@ -91,12 +93,12 @@ public class VendorEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public Long getCreatedByUserID() {
+    public UserAuthEntity getCreatedByUserID() {
         return createdByUserID;
     }
 
 
-    public void setCreatedByUserID(Long createdByUserID) {
+    public void setCreatedByUserID(UserAuthEntity createdByUserID) {
         this.createdByUserID = createdByUserID;
     }
 
@@ -108,11 +110,11 @@ public class VendorEntity {
         this.createdDate = createdDate;
     }
 
-    public Long getLastModifiedByUserID() {
+    public UserAuthEntity getLastModifiedByUserID() {
         return lastModifiedByUserID;
     }
 
-    public void setLastModifiedByUserID(Long lastModifiedByUserID) {
+    public void setLastModifiedByUserID(UserAuthEntity lastModifiedByUserID) {
         this.lastModifiedByUserID = lastModifiedByUserID;
     }
 

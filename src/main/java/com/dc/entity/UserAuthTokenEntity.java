@@ -19,7 +19,7 @@ public class UserAuthTokenEntity {
     @Column(unique = true,nullable = false)
     private String token;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id",nullable = false)
     private UserAuthEntity user;
 

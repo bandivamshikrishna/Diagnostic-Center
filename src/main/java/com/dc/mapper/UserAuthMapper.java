@@ -9,8 +9,6 @@ public class UserAuthMapper {
         UserAuthEntity userAuthEntity = new UserAuthEntity();
         userAuthEntity.setEmail(userCreateRequestDTO.getEmail());
         userAuthEntity.setRoleID(userCreateRequestDTO.getRoleID());
-        userAuthEntity.setVendorID(userCreateRequestDTO.getVendorID());
-        userAuthEntity.setCreatedByUserID(userCreateRequestDTO.getCreatedByUserID());
         return userAuthEntity;
     }
 }
