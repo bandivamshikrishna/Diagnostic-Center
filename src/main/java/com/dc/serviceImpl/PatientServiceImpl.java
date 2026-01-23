@@ -4,7 +4,6 @@ import com.dc.dto.PatientCreateRequestDTO;
 import com.dc.dto.PatientMedicalTestDTO;
 import com.dc.dto.PatientPackageDTO;
 import com.dc.entity.*;
-import com.dc.exception.MedicalTestException;
 import com.dc.exception.PatientException;
 import com.dc.exception.VendorException;
 import com.dc.mapper.PatientMapper;
@@ -45,6 +44,17 @@ public class PatientServiceImpl implements PatientService {
 
     @Override
     public String createPatient(PatientCreateRequestDTO patientCreateRequestDTO) {
+
+        if((patientCreateRequestDTO.getEmail() == null || patientCreateRequestDTO.getEmail().isBlank())
+            && (patientCreateRequestDTO.getPhoneNumber() == null || patientCreateRequestDTO.getPhoneNumber().isBlank())){
+            throw new PatientException("email", "Email Or Phone Number is required");
+        }
+
+        if(patientRepository.existsByEmailAndDateOfBirth(patientCreateRequestDTO.getEmail(),patientCreateRequestDTO.getDob())
+                || patientRepository.existsByPhoneNumberAndDateOfBirth(patientCreateRequestDTO.getPhoneNumber(),patientCreateRequestDTO.getDob()))
+        {
+            throw new PatientException("patient", "Patient Already Exists with Email/Phone Number and Date Of Birth");
+        }
 
         if((patientCreateRequestDTO.getMedicalTests() == null || patientCreateRequestDTO.getMedicalTests().isEmpty())
             && (patientCreateRequestDTO.getPackages() == null || patientCreateRequestDTO.getPackages().isEmpty())){
