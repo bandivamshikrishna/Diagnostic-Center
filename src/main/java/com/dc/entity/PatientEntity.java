@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 
 @Entity(name = "tbl_patient_details")
 public class PatientEntity {
@@ -76,6 +77,16 @@ public class PatientEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_id",referencedColumnName = "id",nullable = false)
     private VendorEntity vendorID;
+
+
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "patient",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<PatientMedicalTestEntity> medicalTests;
+
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PatientMedicalTestPackageEntity> testPackages;
 
     public Long getId() {
         return id;
@@ -220,5 +231,21 @@ public class PatientEntity {
 
     public void setVendorID(VendorEntity vendorID) {
         this.vendorID = vendorID;
+    }
+
+    public List<PatientMedicalTestEntity> getMedicalTests() {
+        return medicalTests;
+    }
+
+    public void setMedicalTests(List<PatientMedicalTestEntity> medicalTests) {
+        this.medicalTests = medicalTests;
+    }
+
+    public List<PatientMedicalTestPackageEntity> getPackages() {
+        return testPackages;
+    }
+
+    public void setPackages(List<PatientMedicalTestPackageEntity> testPackages) {
+        this.testPackages = testPackages;
     }
 }

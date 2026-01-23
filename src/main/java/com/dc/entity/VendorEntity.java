@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity(name = "tbl_vendor_details")
 public class VendorEntity {
@@ -53,8 +54,40 @@ public class VendorEntity {
     private Long maxNoOfUsers;
 
 
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "vendor")
+    private List<VendorMedicalTestEntity> medicalTest;
+
+    @OneToMany(fetch = FetchType.LAZY,mappedBy = "vendor")
+    private List<VendorPackageEntity> packages;
+
+
+
+
+
+
+
+
+
+    //getters an setters
+
     public Long getId() {
         return this.id;
+    }
+
+    public List<VendorMedicalTestEntity> getMedicalTest() {
+        return medicalTest;
+    }
+
+    public void setMedicalTest(List<VendorMedicalTestEntity> medicalTest) {
+        this.medicalTest = medicalTest;
+    }
+
+    public List<VendorPackageEntity> getPackages() {
+        return packages;
+    }
+
+    public void setPackages(List<VendorPackageEntity> packages) {
+        this.packages = packages;
     }
 
     public void setId(Long id) {

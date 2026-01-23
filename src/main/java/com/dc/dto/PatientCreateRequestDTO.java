@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 
 import java.time.LocalTime;
 import java.util.Date;
+import java.util.List;
 
 public class PatientCreateRequestDTO {
 
@@ -62,6 +63,10 @@ public class PatientCreateRequestDTO {
 
     @NotNull(message = "Vendor ID is required")
     private Long vendorID;
+
+    private List<PatientMedicalTestDTO> medicalTests;
+
+    private List<PatientPackageDTO> packages;
 
 
     public Long getTitleID() {
@@ -175,5 +180,22 @@ public class PatientCreateRequestDTO {
 
     public void setVendorID(Long vendorID) {
         this.vendorID = vendorID;
+    }
+
+
+    public List<PatientMedicalTestDTO> getMedicalTests() {
+        return medicalTests;
+    }
+
+    public void setMedicalTests(List<PatientMedicalTestDTO> medicalTests) {
+        this.medicalTests = medicalTests;
+    }
+
+    public List<PatientPackageDTO> getPackages() {
+        return packages;
+    }
+
+    public void setPackages(List<PatientPackageDTO> packages) {
+        this.packages = packages;
     }
 }

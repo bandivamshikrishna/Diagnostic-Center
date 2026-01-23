@@ -1,10 +1,12 @@
 package com.dc.mapper;
 
 
+import com.dc.dto.VendorCreatePackageRequestDTO;
 import com.dc.dto.VendorCreateRequestDTO;
 import com.dc.dto.VendorResponseDTO;
 import com.dc.dto.VendorUpdateRequestDTO;
 import com.dc.entity.VendorEntity;
+import com.dc.entity.VendorPackageEntity;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -45,6 +47,14 @@ public class VendorMapper {
         vendorEntity.setActive(vendorUpdateRequestDTO.isActive());
         vendorEntity.setActivationEndDate(LocalDateTime.parse(vendorUpdateRequestDTO.getActivationEndDate()));
         vendorEntity.setMaxNoOfUsers(vendorUpdateRequestDTO.getMaxNoOfUsers());
+    }
+
+
+    public static VendorPackageEntity fromCreateDTOToEntity(VendorCreatePackageRequestDTO vendorCreatePackageRequestDTO){
+        VendorPackageEntity vendorPackageEntity = new VendorPackageEntity();
+        vendorPackageEntity.setPackageName(vendorCreatePackageRequestDTO.getName());
+        vendorPackageEntity.setPackagePrice(vendorCreatePackageRequestDTO.getPackagePrice());
+        return vendorPackageEntity;
     }
 }
 

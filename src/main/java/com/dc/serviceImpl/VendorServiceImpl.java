@@ -1,30 +1,37 @@
 package com.dc.serviceImpl;
 
 
-import com.dc.dto.VendorCreateRequestDTO;
-import com.dc.dto.VendorResponseDTO;
-import com.dc.dto.VendorUpdateRequestDTO;
-import com.dc.entity.UserAuthEntity;
-import com.dc.entity.VendorEntity;
+import com.dc.dto.*;
+import com.dc.entity.*;
 import com.dc.exception.*;
 import com.dc.mapper.VendorMapper;
-import com.dc.repository.UserAuthRepository;
-import com.dc.repository.VendorRepository;
+import com.dc.repository.*;
 import com.dc.service.VendorService;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class VendorServiceImpl implements VendorService {
 
     private final VendorRepository vendorRepository;
     private final UserAuthRepository userAuthRepository;
+    private final VendorPackageRepository vendorPackageRepository;
+    private final MedicalTestRepository medicalTestRepository;
+    private final VendorMedicalTestRepository vendorMedicalTestRepository;
 
-    public VendorServiceImpl(VendorRepository vendorRepository,UserAuthRepository userAuthRepository){
+    public VendorServiceImpl(VendorRepository vendorRepository,UserAuthRepository userAuthRepository,
+                             VendorPackageRepository vendorPackageRepository,MedicalTestRepository medicalTestRepository,
+                             VendorMedicalTestRepository vendorMedicalTestRepository){
         this.vendorRepository = vendorRepository;
         this.userAuthRepository = userAuthRepository;
+        this.vendorPackageRepository = vendorPackageRepository;
+        this.medicalTestRepository = medicalTestRepository;
+        this.vendorMedicalTestRepository = vendorMedicalTestRepository;
+
     }
 
     @Override
@@ -91,5 +98,52 @@ public class VendorServiceImpl implements VendorService {
         );
         return vendorEntity.getMaxNoOfUsers();
     }
+
+    @Override
+    public String createVendorPackage(VendorCreatePackageRequestDTO vendorCreatePackageRequestDTO) {
+
+        VendorEntity vendor = vendorRepository.findById(vendorCreatePackageRequestDTO.getVendorID()).orElseThrow(
+                ()-> new VendorException("vendorID", String.format("Vendor Not Found with ID : %d", vendorCreatePackageRequestDTO.getVendorID()))
+        );
+        VendorPackageEntity vendorPackageEntity = VendorMapper.fromCreateDTOToEntity(vendorCreatePackageRequestDTO);
+        List<VendorPackageMedicalTestEntity> medicalTests = new ArrayList<>();
+
+        for (MedicalTestsIDTO test : vendorCreatePackageRequestDTO.getMedicalTests()){
+            MedicalTestEntity medicalTestEntity = medicalTestRepository.findById(test.getId()).orElseThrow(
+                    ()->new MedicalTestException("id",String.format("Medical Test Not Found with ID: %d", test.getId()))
+            );
+            VendorPackageMedicalTestEntity medicalTest = new VendorPackageMedicalTestEntity();
+            medicalTest.setPackageID(vendorPackageEntity);
+            medicalTest.setMedicalTest(medicalTestEntity);
+            medicalTests.add(medicalTest);
+        }
+
+        vendorPackageEntity.setMedicalTest(medicalTests);
+        vendorPackageEntity.setVendor(vendor);
+        return String.format("Package Created Successfully with ID : %d", vendorPackageRepository.save(vendorPackageEntity).getId());
+    }
+
+    @Override
+    public String manageVendorMedicalTests(VendorManageMedicalTestsDTO vendorManageMedicalTestsDTO){
+        VendorEntity vendorEntity = vendorRepository.findById(vendorManageMedicalTestsDTO.getVendorID()).orElseThrow(
+                () -> new VendorException("vendorID", String.format("Vendor Not Found with ID : %d", vendorManageMedicalTestsDTO.getVendorID()))
+        );
+        List<VendorMedicalTestEntity> vendorMedicalTestEntities = new ArrayList<>();
+        for(VendorMedicalTestsDTO test : vendorManageMedicalTestsDTO.getMedicalTests()){
+            MedicalTestEntity medicalTest = medicalTestRepository.findById(test.getMedicalTestID()).orElseThrow(
+                    ()-> new MedicalTestException("testID", String.format("Medical Test Not Found with ID : %d", test.getMedicalTestID()))
+            );
+
+            VendorMedicalTestEntity vendorMedicalTestEntity = new VendorMedicalTestEntity();
+            vendorMedicalTestEntity.setVendor(vendorEntity);
+            vendorMedicalTestEntity.setMedicalTestPrice(test.getTestPrice());
+            vendorMedicalTestEntity.setMedicalTest(medicalTest);
+
+            vendorMedicalTestEntities.add(vendorMedicalTestEntity);
+        }
+        vendorMedicalTestRepository.saveAll(vendorMedicalTestEntities);
+        return "Tests Updated successfully";
+    }
+
 }
 

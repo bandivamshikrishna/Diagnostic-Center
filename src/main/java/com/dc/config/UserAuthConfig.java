@@ -54,7 +54,6 @@ public class UserAuthConfig {
         return  http
         .authorizeHttpRequests(
                 auth -> auth
-                        .requestMatchers("/api/user/logout").authenticated()
                         .requestMatchers(
                                  publicURLs.toArray(new String[0]))
                         .permitAll()
@@ -65,7 +64,6 @@ public class UserAuthConfig {
                 .addFilterAfter(jwtRefreshFilter, JWTValidationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/api/user/logout")
-                        .permitAll(false)
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler(((request,
                                                 response,

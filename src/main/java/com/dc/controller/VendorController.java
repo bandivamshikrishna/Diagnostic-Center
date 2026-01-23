@@ -1,8 +1,6 @@
 package com.dc.controller;
 
-import com.dc.dto.VendorCreateRequestDTO;
-import com.dc.dto.VendorResponseDTO;
-import com.dc.dto.VendorUpdateRequestDTO;
+import com.dc.dto.*;
 import com.dc.service.VendorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -36,4 +34,17 @@ public class VendorController {
     public ResponseEntity<String> updateVendorByID(@PathVariable(name = "id") long id, @Valid @RequestBody VendorUpdateRequestDTO vendorUpdateRequestDTO){
         return new ResponseEntity<>(vendorService.updateVendorById(id,vendorUpdateRequestDTO), HttpStatus.OK);
     }
+
+    @PostMapping("/create-package")
+    public ResponseEntity<String> createVendorPackage(@Valid @RequestBody VendorCreatePackageRequestDTO vendorCreatePackageRequestDTO){
+        return new ResponseEntity<>(vendorService.createVendorPackage(vendorCreatePackageRequestDTO),HttpStatus.CREATED);
+    }
+
+    @PostMapping("/manage-test")
+    public ResponseEntity<String> manageVendorMedicalTests(@Valid @RequestBody VendorManageMedicalTestsDTO vendorManageMedicalTestsDTO){
+        return new ResponseEntity<>(vendorService.manageVendorMedicalTests(vendorManageMedicalTestsDTO),HttpStatus.OK);
+    }
+
+
+
 }
