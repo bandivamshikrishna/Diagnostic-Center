@@ -49,15 +49,16 @@ public class UserAuthController {
 
 
     @PostMapping("/login")
-    public void loginUser(@Valid @RequestBody UserLoginRequestDTO userLoginRequestDTO, HttpServletResponse httpServletResponse){
+    public ResponseEntity<Void> loginUser(@Valid @RequestBody UserLoginRequestDTO userLoginRequestDTO, HttpServletResponse httpServletResponse){
         JWTTokens jwtTokens = userAuthService.loginUser(userLoginRequestDTO);
         httpServletResponse.setHeader("Authorization", "Bearer "+jwtTokens.getAccessToken());
 
         Cookie cookie = new Cookie("refreshToken", jwtTokens.getRefreshToken());
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setMaxAge(jwtRefreshExpiration/1000);
         cookie.setPath("/api/user/refreshToken");
         httpServletResponse.addCookie(cookie);
+        return ResponseEntity.ok().build();
     }
 }
