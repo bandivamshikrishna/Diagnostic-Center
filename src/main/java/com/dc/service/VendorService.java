@@ -1,11 +1,13 @@
 package com.dc.service;
 
 import com.dc.dto.*;
+import com.dc.entity.UserAuthEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 public interface VendorService {
-    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO) throws IOException;
+    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO, MultipartFile logo,UserAuthEntity userAuthEntity) throws IOException;
     public void getAllActiveVendors();
     public VendorResponseDTO getVendorById(long id);
     public String updateVendorById(long id, VendorUpdateRequestDTO vendorUpdateRequestDTO);

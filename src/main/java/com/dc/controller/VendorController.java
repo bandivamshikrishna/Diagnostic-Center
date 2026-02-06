@@ -1,16 +1,20 @@
 package com.dc.controller;
 
 import com.dc.dto.*;
+import com.dc.entity.UserAuthEntity;
 import com.dc.service.VendorService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/vendor")
+@RequestMapping("/api/admin/vendor")
 public class VendorController {
 
     private final VendorService vendorService;
@@ -20,9 +24,9 @@ public class VendorController {
     }
 
 
-    @PostMapping
-    public ResponseEntity<String> createVendor(@Valid @ModelAttribute VendorCreateRequestDTO vendorCreateRequestDTO) throws IOException, IOException {
-        return new ResponseEntity<>(vendorService.createVendor(vendorCreateRequestDTO), HttpStatus.CREATED);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> createVendor(@Valid @RequestPart("data") VendorCreateRequestDTO vendorCreateRequestDTO , @RequestPart("logo")MultipartFile logo, @AuthenticationPrincipal UserAuthEntity userAuthEntity) throws IOException, IOException {
+        return new ResponseEntity<>(vendorService.createVendor(vendorCreateRequestDTO,logo,userAuthEntity), HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")

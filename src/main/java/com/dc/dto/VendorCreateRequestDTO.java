@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public class VendorCreateRequestDTO {
     @NotBlank(message = "Name is required")
     private String name;
@@ -25,17 +27,16 @@ public class VendorCreateRequestDTO {
     )
     private String phoneNumber;
 
-    @NotNull(message = "Logo is required")
     private MultipartFile logo;
-
-    @NotNull(message = "Created By User ID is required")
-    private Long createdByUserID;
 
     @NotBlank(message = "Activation End Date is required")
     private String activationEndDate;
 
     @NotNull(message = "Max No Of Users is required")
     private Long maxNoOfUsers;
+
+    private List<VendorBranchDTO> branches;
+
 
     public String getName() {
         return name;
@@ -77,14 +78,6 @@ public class VendorCreateRequestDTO {
         this.logo = logo;
     }
 
-    public Long getCreatedByUserID() {
-        return createdByUserID;
-    }
-
-    public void setCreatedByUserID(Long createdByUserID) {
-        this.createdByUserID = createdByUserID;
-    }
-
     public String getActivationEndDate() {
         return activationEndDate;
     }
@@ -99,5 +92,13 @@ public class VendorCreateRequestDTO {
 
     public void setMaxNoOfUsers(Long maxNoOfUsers) {
         this.maxNoOfUsers = maxNoOfUsers;
+    }
+
+    public List<VendorBranchDTO> getBranches() {
+        return branches;
+    }
+
+    public void setBranches(List<VendorBranchDTO> branches) {
+        this.branches = branches;
     }
 }

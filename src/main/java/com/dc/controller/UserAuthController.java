@@ -1,10 +1,8 @@
 package com.dc.controller;
 
 
-import com.dc.dto.JWTTokens;
-import com.dc.dto.UserCreateRequestDTO;
-import com.dc.dto.UserLoginRequestDTO;
-import com.dc.dto.UserSetPasswordDTO;
+import com.dc.dto.*;
+import com.dc.entity.UserAuthEntity;
 import com.dc.service.UserAuthService;
 import com.dc.service.UserAuthTokenService;
 import jakarta.servlet.http.Cookie;
@@ -13,6 +11,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -60,5 +60,10 @@ public class UserAuthController {
         cookie.setPath("/api/user/refreshToken");
         httpServletResponse.addCookie(cookie);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity){
+        return new ResponseEntity<>(userAuthService.getUserDetails(userAuthEntity),HttpStatus.OK);
     }
 }

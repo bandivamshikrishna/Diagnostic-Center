@@ -74,12 +74,12 @@ public class UserAuthTokenServiceImpl implements UserAuthTokenService {
         }
     }
 
-    @Scheduled(fixedRate = 1000*60*60)
-    public void clearExpiredTokens(){
-        List<UserAuthTokenEntity> userAuthTokenExpired = userAuthTokenRepository.findAllByTokenRevokedFalseAndTokenExpirationDateBefore(LocalDateTime.now());
-
-        if(!userAuthTokenExpired.isEmpty()){
-            userAuthTokenRepository.deleteAll(userAuthTokenExpired);
-        }
-    }
+//    @Scheduled(fixedRate = 1000*60*60)
+//    public void clearExpiredTokens(){
+//        List<UserAuthTokenEntity> userAuthTokenExpired = userAuthTokenRepository.findAllByTokenRevokedTrueOrTokenExpirationDateBefore(LocalDateTime.now());
+//
+//        if(!userAuthTokenExpired.isEmpty()){
+//            userAuthTokenRepository.deleteAll(userAuthTokenExpired);
+//        }
+//    }
 }

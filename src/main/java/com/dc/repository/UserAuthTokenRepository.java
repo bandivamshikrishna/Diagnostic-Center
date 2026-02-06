@@ -13,7 +13,7 @@ import java.util.Optional;
 @Repository
 public interface UserAuthTokenRepository extends JpaRepository<UserAuthTokenEntity, Long> {
     public Optional<UserAuthTokenEntity> findByToken(String token);
-    public List<UserAuthTokenEntity> findAllByTokenRevokedFalseAndTokenExpirationDateBefore(LocalDateTime localDateTime);
+    public List<UserAuthTokenEntity> findAllByTokenRevokedTrueOrTokenExpirationDateBefore(LocalDateTime localDateTime);
     public List<UserAuthTokenEntity> findByUserEmail(String email);
 
 }

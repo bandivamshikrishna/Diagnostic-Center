@@ -5,11 +5,14 @@ import com.dc.dto.VendorCreatePackageRequestDTO;
 import com.dc.dto.VendorCreateRequestDTO;
 import com.dc.dto.VendorResponseDTO;
 import com.dc.dto.VendorUpdateRequestDTO;
+import com.dc.entity.VendorBranchEntity;
 import com.dc.entity.VendorEntity;
 import com.dc.entity.VendorPackageEntity;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class VendorMapper {
     public static VendorEntity fromCreateDTOToEntity(VendorCreateRequestDTO vendorCreateRequestDTO) throws IOException {
@@ -18,9 +21,20 @@ public class VendorMapper {
         vendorEntity.setEmail(vendorCreateRequestDTO.getEmail());
         vendorEntity.setAddress(vendorCreateRequestDTO.getAddress());
         vendorEntity.setPhoneNumber(vendorCreateRequestDTO.getPhoneNumber());
-        vendorEntity.setLogo(vendorCreateRequestDTO.getLogo().getBytes());
         vendorEntity.setActivationEndDate(LocalDateTime.parse(vendorCreateRequestDTO.getActivationEndDate()));
         vendorEntity.setMaxNoOfUsers(vendorCreateRequestDTO.getMaxNoOfUsers());
+
+        List<VendorBranchEntity> vendorBranchEntities = vendorCreateRequestDTO.getBranches().stream().map(
+                (branch) -> {
+                    VendorBranchEntity vendorBranchEntity = new VendorBranchEntity();
+                    vendorBranchEntity.setVendor(vendorEntity);
+                    vendorBranchEntity.setBranchCode(branch.getBranchCode());
+                    vendorBranchEntity.setBranchName(branch.getBranchName());
+                    vendorBranchEntity.setBranchAddress(branch.getBranchAddress());
+                    return vendorBranchEntity;
+                }
+        ).toList();
+        vendorEntity.setBranches(vendorBranchEntities);
         return vendorEntity;
     }
 

@@ -7,7 +7,9 @@ import com.dc.exception.*;
 import com.dc.mapper.VendorMapper;
 import com.dc.repository.*;
 import com.dc.service.VendorService;
+import com.dc.utils.FileStorageService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -35,10 +37,9 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO) throws IOException {
-        UserAuthEntity createdByUserID = userAuthRepository.findById(vendorCreateRequestDTO.getCreatedByUserID()).orElseThrow(
-                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", vendorCreateRequestDTO.getCreatedByUserID())));
-
+    public String createVendor(VendorCreateRequestDTO vendorCreateRequestDTO, MultipartFile logo, UserAuthEntity userAuthEntity) throws IOException {
+        UserAuthEntity createdByUserID = userAuthRepository.findById(userAuthEntity.getId()).orElseThrow(
+                () -> new UserException("createdByUserID",String.format("User Not Found with ID : %d", userAuthEntity.getId())));
         if(vendorRepository.existsByEmail(vendorCreateRequestDTO.getEmail().toLowerCase().trim()))
             throw new VendorException("email",String.format("Vendor Already Exists with Email ID : %s",vendorCreateRequestDTO.getEmail()));
         if(vendorRepository.existsByPhoneNumber(vendorCreateRequestDTO.getPhoneNumber()))
@@ -48,6 +49,7 @@ public class VendorServiceImpl implements VendorService {
         vendorEntity.setCreatedDate( LocalDateTime.now());
         vendorEntity.setEmail(vendorEntity.getEmail().toLowerCase());
         vendorEntity.setActive(true);
+        vendorEntity.setLogoFolderPath(FileStorageService.storeFile(logo,"img"));
         VendorEntity savedVendorEntity = vendorRepository.save(vendorEntity);
 
         //Email Notification

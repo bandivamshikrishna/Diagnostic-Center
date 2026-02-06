@@ -26,9 +26,7 @@ public class VendorEntity {
     @Column(unique = true, nullable = false)
     private String phoneNumber;
 
-    @Lob
-    @Column(nullable = true)
-    private byte[] logo;
+    private String logoFolderPath;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by_user_id", referencedColumnName = "id",nullable = false)
@@ -61,7 +59,8 @@ public class VendorEntity {
     private List<VendorPackageEntity> packages;
 
 
-
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "vendor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VendorBranchEntity> branches;
 
 
 
@@ -175,19 +174,28 @@ public class VendorEntity {
         this.activationEndDate = activationEndDate;
     }
 
-    public byte[] getLogo() {
-        return logo;
-    }
-
-    public void setLogo(byte[] logo) {
-        this.logo = logo;
-    }
-
     public Long getMaxNoOfUsers() {
         return maxNoOfUsers;
     }
 
     public void setMaxNoOfUsers(Long maxNoOfUsers) {
         this.maxNoOfUsers = maxNoOfUsers;
+    }
+
+    public List<VendorBranchEntity> getBranches() {
+        return branches;
+    }
+
+    public void setBranches(List<VendorBranchEntity> branches) {
+        this.branches = branches;
+    }
+
+
+    public String getLogoFolderPath() {
+        return logoFolderPath;
+    }
+
+    public void setLogoFolderPath(String logoFolderPath) {
+        this.logoFolderPath = logoFolderPath;
     }
 }

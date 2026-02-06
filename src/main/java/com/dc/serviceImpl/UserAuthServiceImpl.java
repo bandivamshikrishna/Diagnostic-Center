@@ -3,6 +3,7 @@ package com.dc.serviceImpl;
 import com.dc.dto.JWTTokens;
 import com.dc.dto.UserCreateRequestDTO;
 import com.dc.dto.UserLoginRequestDTO;
+import com.dc.dto.UserResponseDTO;
 import com.dc.entity.UserAuthEntity;
 import com.dc.entity.VendorEntity;
 import com.dc.enums.TokenTypeEnum;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -105,6 +107,12 @@ public class UserAuthServiceImpl implements UserAuthService, UserDetailsService 
                         TokenTypeEnum.REFRESH_TOKEN, refreshTokenExpiration);
         }
         return  jwtTokens;
+    }
+
+    @Override
+    public UserResponseDTO getUserDetails(@AuthenticationPrincipal UserAuthEntity userAuthEntity) {
+        UserResponseDTO userResponseDTO = UserAuthMapper.fromEntityToDTO(userAuthEntity);
+        return userResponseDTO;
     }
 
 

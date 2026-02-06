@@ -89,8 +89,9 @@ public class UserAuthConfig {
                         .logoutSuccessHandler(((request,
                                                 response,
                                                 authentication) -> {
+                            response.setContentType("application/json");
                             response.setStatus(HttpServletResponse.SC_OK);
-                            response.getWriter().write("User Logged Out Successfully..");
+                            response.getWriter().write("{\"message\": \"User Logged Out Successfully..\"}");
 
                         })))
                         .build();
